@@ -152,10 +152,10 @@ impl AttestationRegistry {
         env: Env,
         new_impl: Address,
         new_version: u32,
-        migration_data: Option<Bytes>,
+        _migration_data: Option<Bytes>,
     ) {
         Self::require_initialized(&env);
-        let admin = Self::require_admin(&env);
+        let _admin = Self::require_admin(&env);
 
         // Validate new implementation is not zero address
         // In Soroban, we check by ensuring it's not the default/empty address

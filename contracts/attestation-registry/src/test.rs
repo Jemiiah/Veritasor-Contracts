@@ -228,16 +228,17 @@ fn upgrade_allows_skipping_versions() {
 fn rollback_success() {
     let (env, client, admin, impl_v1) = setup();
     let impl_v2 = Address::generate(&env);
+    let impl_v2_clone = impl_v2.clone();
 
     client.upgrade(&impl_v2, &2u32, &None);
-    assert_eq!(client.get_current_implementation(), Some(impl_v2));
+    assert_eq!(client.get_current_implementation(), Some(impl_v2_clone.clone()));
     assert_eq!(client.get_current_version(), Some(2u32));
 
     client.rollback();
     assert_eq!(client.get_current_implementation(), Some(impl_v1));
     assert_eq!(client.get_current_version(), Some(1u32));
     // After rollback, previous is now v2
-    assert_eq!(client.get_previous_implementation(), Some(impl_v2));
+    assert_eq!(client.get_previous_implementation(), Some(impl_v2_clone));
     assert_eq!(client.get_previous_version(), Some(2u32));
 }
 
@@ -392,18 +393,20 @@ fn get_version_info_after_upgrade() {
 fn query_functions_work_after_multiple_upgrades() {
     let (env, client, admin, impl_v1) = setup();
     let impl_v2 = Address::generate(&env);
+    let impl_v2_clone = impl_v2.clone();
     let impl_v3 = Address::generate(&env);
+    let impl_v3_clone = impl_v3.clone();
 
     client.upgrade(&impl_v2, &2u32, &None);
-    assert_eq!(client.get_current_implementation(), Some(impl_v2));
+    assert_eq!(client.get_current_implementation(), Some(impl_v2_clone.clone()));
     assert_eq!(client.get_current_version(), Some(2u32));
     assert_eq!(client.get_previous_implementation(), Some(impl_v1));
     assert_eq!(client.get_previous_version(), Some(1u32));
 
     client.upgrade(&impl_v3, &3u32, &None);
-    assert_eq!(client.get_current_implementation(), Some(impl_v3));
+    assert_eq!(client.get_current_implementation(), Some(impl_v3_clone));
     assert_eq!(client.get_current_version(), Some(3u32));
-    assert_eq!(client.get_previous_implementation(), Some(impl_v2));
+    assert_eq!(client.get_previous_implementation(), Some(impl_v2_clone));
     assert_eq!(client.get_previous_version(), Some(2u32));
 }
 
