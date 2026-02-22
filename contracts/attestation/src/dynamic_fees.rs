@@ -30,7 +30,7 @@
 //! If no `FeeConfig` has been stored, or if `FeeConfig.enabled == false`,
 //! attestations are free — identical to pre-fee behavior.
 
-use soroban_sdk::{contracttype, token, Address, Env, Symbol, Vec};
+use soroban_sdk::{contracttype, token, Address, Env, Symbol, Val, Vec};
 
 // ════════════════════════════════════════════════════════════════════
 //  Storage types
@@ -267,13 +267,10 @@ pub fn calculate_fee(env: &Env, business: &Address) -> i128 {
 }
 
 fn get_fee_config_from_dao(env: &Env) -> Option<FeeConfig> {
-    let dao = match get_dao(env) {
-        Some(d) => d,
-        None => return None,
-    };
+    let dao = get_dao(env)?;
     let func = Symbol::new(env, "get_attestation_fee_config");
-    let opt: Option<(Address, Address, i128, bool)> =
-        env.invoke_contract(&dao, &func, ());
+    let args = Vec::<Val>::new(env);
+    let opt: Option<(Address, Address, i128, bool)> = env.invoke_contract(&dao, &func, args);
     opt.map(|(token, collector, base_fee, enabled)| FeeConfig {
         token,
         collector,

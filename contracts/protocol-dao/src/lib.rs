@@ -166,12 +166,8 @@ fn quorum_met(env: &Env, id: u64) -> bool {
 fn apply_action(env: &Env, action: &ProposalAction) {
     match action {
         ProposalAction::SetAttestationFeeConfig(token, collector, base_fee, enabled) => {
-            let cfg: (Address, Address, i128, bool) = (
-                token.clone(),
-                collector.clone(),
-                *base_fee,
-                *enabled,
-            );
+            let cfg: (Address, Address, i128, bool) =
+                (token.clone(), collector.clone(), *base_fee, *enabled);
             env.storage()
                 .instance()
                 .set(&DataKey::AttestationFeeConfig, &cfg);
@@ -188,9 +184,7 @@ fn apply_action(env: &Env, action: &ProposalAction) {
                 .set(&DataKey::AttestationFeeConfig, &cfg);
         }
         ProposalAction::UpdateGovernanceConfig(min_votes, duration) => {
-            env.storage()
-                .instance()
-                .set(&DataKey::MinVotes, min_votes);
+            env.storage().instance().set(&DataKey::MinVotes, min_votes);
             env.storage()
                 .instance()
                 .set(&DataKey::ProposalDuration, duration);
@@ -281,9 +275,7 @@ impl ProtocolDao {
         let proposal = Proposal {
             id,
             creator: creator.clone(),
-            action: ProposalAction::SetAttestationFeeConfig(
-                token, collector, base_fee, enabled,
-            ),
+            action: ProposalAction::SetAttestationFeeConfig(token, collector, base_fee, enabled),
             status: ProposalStatus::Pending,
             created_at: env.ledger().sequence(),
         };
@@ -291,11 +283,7 @@ impl ProtocolDao {
         id
     }
 
-    pub fn create_fee_toggle_proposal(
-        env: Env,
-        creator: Address,
-        enabled: bool,
-    ) -> u64 {
+    pub fn create_fee_toggle_proposal(env: Env, creator: Address, enabled: bool) -> u64 {
         creator.require_auth();
         ensure_token_holder(&env, &creator);
 
@@ -426,9 +414,7 @@ impl ProtocolDao {
     }
 
     pub fn get_attestation_fee_config(env: Env) -> Option<(Address, Address, i128, bool)> {
-        env.storage()
-            .instance()
-            .get(&DataKey::AttestationFeeConfig)
+        env.storage().instance().get(&DataKey::AttestationFeeConfig)
     }
 }
 

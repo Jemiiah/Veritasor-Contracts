@@ -1,5 +1,3 @@
-#![cfg(test)]
-
 extern crate std;
 
 use super::*;
@@ -21,7 +19,12 @@ fn setup_with_token(
     let admin = Address::generate(&env);
     let contract_id = env.register(ProtocolDao, ());
     let client = ProtocolDaoClient::new(&env, &contract_id);
-    client.initialize(&admin, &Some(token_addr.clone()), &min_votes, &proposal_duration);
+    client.initialize(
+        &admin,
+        &Some(token_addr.clone()),
+        &min_votes,
+        &proposal_duration,
+    );
 
     (env, client, admin, token_addr)
 }
@@ -83,7 +86,7 @@ fn set_governance_token_by_non_admin_panics() {
 
 #[test]
 fn set_voting_config_by_admin() {
-    let (env, client, admin, _token_addr) = setup_with_token(1, 10);
+    let (_env, client, admin, _token_addr) = setup_with_token(1, 10);
     client.set_voting_config(&admin, &3, &20);
     let (_, _, min_votes, duration) = client.get_config();
     assert_eq!(min_votes, 3);
@@ -256,7 +259,7 @@ fn cancel_proposal_by_admin() {
 #[test]
 #[should_panic(expected = "only creator or admin can cancel")]
 fn cancel_proposal_by_other_panics() {
-    let (env, client, admin, gov_token) = setup_with_token(1, 100);
+    let (env, client, _admin, gov_token) = setup_with_token(1, 100);
 
     let creator = Address::generate(&env);
     mint(&env, &gov_token, &creator, 100);
