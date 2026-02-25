@@ -49,7 +49,8 @@
                 },
                 {
                   "u32": 1
-                }
+                },
+                "void"
               ]
             }
           },
@@ -81,7 +82,8 @@
                 },
                 {
                   "u32": 1
-                }
+                },
+                "void"
               ]
             }
           },
@@ -113,7 +115,8 @@
                 },
                 {
                   "u32": 1
-                }
+                },
+                "void"
               ]
             }
           },
@@ -146,7 +149,8 @@
                 },
                 {
                   "u32": 1
-                }
+                },
+                "void"
               ]
             }
           },
@@ -233,7 +237,8 @@
                                 "hi": 0,
                                 "lo": 0
                               }
-                            }
+                            },
+                            "void"
                           ]
                         }
                       },
@@ -267,7 +272,8 @@
                                 "hi": 0,
                                 "lo": 0
                               }
-                            }
+                            },
+                            "void"
                           ]
                         }
                       },
@@ -301,7 +307,8 @@
                                 "hi": 0,
                                 "lo": 0
                               }
-                            }
+                            },
+                            "void"
                           ]
                         }
                       },
@@ -335,7 +342,8 @@
                                 "hi": 0,
                                 "lo": 0
                               }
-                            }
+                            },
+                            "void"
                           ]
                         }
                       },
@@ -352,6 +360,37 @@
                         },
                         "val": {
                           "u64": 4
+                        }
+                      },
+                      {
+                        "key": {
+                          "vec": [
+                            {
+                              "symbol": "RoleHolders"
+                            }
+                          ]
+                        },
+                        "val": {
+                          "vec": [
+                            {
+                              "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "vec": [
+                            {
+                              "symbol": "Roles"
+                            },
+                            {
+                              "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                            }
+                          ]
+                        },
+                        "val": {
+                          "u32": 1
                         }
                       }
                     ]

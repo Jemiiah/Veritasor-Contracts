@@ -41,7 +41,7 @@ fn test_submit_and_verify_revenue() {
     let version = 1;
 
     // 4. Submit Attestation to Core (Business does this)
-    core_client.submit_attestation(&business, &period, &root, &timestamp, &version);
+    core_client.submit_attestation(&business, &period, &root, &timestamp, &version, &None);
 
     // 5. Submit Revenue to Lender (Business/Lender does this)
     lender_client.submit_revenue(&business, &period, &revenue);
@@ -78,7 +78,7 @@ fn test_submit_invalid_revenue_panics() {
     let root: BytesN<32> = env.crypto().sha256(&payload).into();
 
     // Submit valid attestation
-    core_client.submit_attestation(&business, &period, &root, &1772000000, &1);
+    core_client.submit_attestation(&business, &period, &root, &1772000000, &1, &None);
 
     // Try to submit DIFFERENT revenue (60,000)
     let fake_revenue: i128 = 60_000_00;
@@ -109,7 +109,7 @@ fn test_trailing_revenue_and_anomalies() {
         let payload = Bytes::from_slice(&env, &buf);
         let root: BytesN<32> = env.crypto().sha256(&payload).into();
         
-        core_client.submit_attestation(&business, &period, &root, &100, &1);
+        core_client.submit_attestation(&business, &period, &root, &100, &1, &None);
         lender_client.submit_revenue(&business, &period, &rev);
     };
 
