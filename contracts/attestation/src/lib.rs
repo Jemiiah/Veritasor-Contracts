@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, Address, BytesN, Env, String, Vec};
+use soroban_sdk::{contract, contractimpl, Address, BytesN, Env, String, Symbol, Vec};
 
 // ─── Feature modules: add new `pub mod <name>;` here (one per feature) ───
 pub mod access_control;
@@ -7,6 +7,7 @@ pub mod dynamic_fees;
 pub mod events;
 pub mod extended_metadata;
 pub mod multisig;
+pub mod registry;
 pub mod rate_limit;
 // ─── End feature modules ───
 
@@ -16,6 +17,7 @@ pub use dynamic_fees::{compute_fee, DataKey, FeeConfig};
 pub use events::{AttestationMigratedEvent, AttestationRevokedEvent, AttestationSubmittedEvent};
 pub use extended_metadata::{AttestationMetadata, RevenueBasis};
 pub use multisig::{Proposal, ProposalAction, ProposalStatus};
+pub use registry::{BusinessRecord, BusinessStatus};
 pub use rate_limit::RateLimitConfig;
 // ─── End re-exports ───
 
@@ -39,6 +41,8 @@ mod test;
 // ─── End test modules ───
 
 pub mod dispute;
+#[cfg(test)]
+mod registry_test;
 
 const ANOMALY_KEY_TAG: u32 = 1;
 const ADMIN_KEY_TAG: (u32,) = (2,);
@@ -240,6 +244,73 @@ impl AttestationContract {
         access_control::is_paused(&env)
     }
 
+    /// Register a new business. The caller must hold `ROLE_BUSINESS` and
+    /// authorise as their own address.
+    ///
+    /// Creates a record in `Pending` state. Admin must call
+    /// `approve_business` before the business can submit attestations.
+    ///
+    /// Panics if `business` is already registered.
+    pub fn register_business(
+        env: Env,
+        business: Address,
+        name_hash: BytesN<32>,
+        jurisdiction: Symbol,
+        tags: Vec<Symbol>,
+    ) {
+        access_control::require_not_paused(&env);
+        registry::register_business(&env, &business, name_hash, jurisdiction, tags);
+    }
+
+    /// Approve a Pending business → Active. Caller must hold `ROLE_ADMIN`.
+    ///
+    /// Panics if `business` is not in `Pending` state.
+    pub fn approve_business(env: Env, caller: Address, business: Address) {
+        access_control::require_not_paused(&env);
+        registry::approve_business(&env, &caller, &business);
+    }
+
+    /// Suspend an Active business → Suspended. Caller must hold `ROLE_ADMIN`.
+    ///
+    /// `reason` is emitted in the on-chain event for compliance audit trails.
+    /// Panics if `business` is not in `Active` state.
+    pub fn suspend_business(env: Env, caller: Address, business: Address, reason: Symbol) {
+        registry::suspend_business(&env, &caller, &business, reason);
+    }
+
+    /// Reactivate a Suspended business → Active. Caller must hold `ROLE_ADMIN`.
+    ///
+    /// Panics if `business` is not in `Suspended` state.
+    pub fn reactivate_business(env: Env, caller: Address, business: Address) {
+        access_control::require_not_paused(&env);
+        registry::reactivate_business(&env, &caller, &business);
+    }
+
+    /// Replace the tag set on a business record. Caller must hold `ROLE_ADMIN`.
+    ///
+    /// Valid for any lifecycle state. Tags are the KYB/KYC extension hook.
+    pub fn update_business_tags(env: Env, caller: Address, business: Address, tags: Vec<Symbol>) {
+        registry::update_tags(&env, &caller, &business, tags);
+    }
+
+    /// Returns `true` if `business` is registered and `Active`.
+    ///
+    /// This is the attestation gate — called inside `submit_attestation`
+    /// to block Pending and Suspended businesses from submitting.
+    pub fn is_business_active(env: Env, business: Address) -> bool {
+        registry::is_active(&env, &business)
+    }
+
+    /// Return the full business record, or `None` if not registered.
+    pub fn get_business(env: Env, business: Address) -> Option<BusinessRecord> {
+        registry::get_business(&env, &business)
+    }
+
+    /// Return the current business status, or `None` if not registered.
+    pub fn get_business_status(env: Env, business: Address) -> Option<BusinessStatus> {
+        registry::get_status(&env, &business)
+    }
+
     // ── Core attestation methods ────────────────────────────────────
 
     /// Submit a revenue attestation.
@@ -273,6 +344,14 @@ impl AttestationContract {
         access_control::require_not_paused(&env);
         business.require_auth();
 
+        // Registry gate: if the business is registered, it must be Active.
+        // Unregistered addresses are still allowed (backward-compatible).
+        if registry::get_business(&env, &business).is_some() {
+            assert!(
+                registry::is_active(&env, &business),
+                "business is not active in the registry"
+            );
+        }
         // Enforce rate limit before any fee collection or state mutation.
         rate_limit::check_rate_limit(&env, &business);
 
@@ -281,10 +360,7 @@ impl AttestationContract {
             panic!("attestation already exists for this business and period");
         }
 
-        // Collect fee (0 if fees disabled or not configured).
         let fee_paid = dynamic_fees::collect_fee(&env, &business);
-
-        // Track volume for future discount calculations.
         dynamic_fees::increment_business_count(&env, &business);
 
         let data = (
