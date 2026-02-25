@@ -62,6 +62,7 @@ fn test_submit_and_verify_revenue() {
     let version = 1;
 
     // 5. Submit Attestation to Core (Business does this)
+    // 4. Submit Attestation to Core (Business does this)
     core_client.submit_attestation(&business, &period, &root, &timestamp, &version, &None);
 
     // 6. Submit Revenue to Lender (Lender does this)
@@ -180,6 +181,7 @@ fn test_trailing_revenue_and_anomalies() {
         
         core_client.submit_attestation(&business, &period, &root, &100, &1, &None);
         lender_client.submit_revenue(&lender, &business, &period, &rev);
+        lender_client.submit_revenue(&business, &period, &rev);
     };
 
     submit_period("2026-01", 1000);

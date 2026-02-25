@@ -48,6 +48,7 @@ fn test_revocation_by_admin() {
     assert!(attestation.is_some());
     let (stored_root, stored_timestamp, stored_version, _stored_fee, _stored_expiry) =
         attestation.unwrap();
+    let (stored_root, stored_timestamp, stored_version, _stored_fee, _) = attestation.unwrap();
     assert_eq!(stored_root, merkle_root);
     assert_eq!(stored_timestamp, 1234567890);
     assert_eq!(stored_version, 1);

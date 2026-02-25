@@ -800,6 +800,24 @@
                         },
                         "val": {
                           "bool": true
+                          "vec": [
+                            {
+                              "bytes": "75b36c508866d18732305da14fe9a0ab4548c09a05446cb9a09c2a59ecd841d7"
+                            },
+                            {
+                              "u64": 100
+                            },
+                            {
+                              "u32": 1
+                            },
+                            {
+                              "i128": {
+                                "hi": 0,
+                                "lo": 0
+                              }
+                            },
+                            "void"
+                          ]
                         }
                       },
                       {
@@ -830,6 +848,16 @@
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
                               }
+                            },
+                            "void"
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "vec": [
+                            {
+                              "symbol": "Attestation"
                             },
                             {
                               "key": {
@@ -899,7 +927,8 @@
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                               }
-                            }
+                            },
+                            "void"
                           ]
                         }
                       },
@@ -914,9 +943,65 @@
                         "val": {
                           "vec": [
                             {
+                              "bytes": "445292e9eabf5825495af827e91abce660f7279088577047dd817f6281d1729c"
+                            },
+                            {
+                              "u64": 100
+                            },
+                            {
+                              "u32": 1
+                            },
+                            {
+                              "i128": {
+                                "hi": 0,
+                                "lo": 0
+                              }
+                            },
+                            "void"
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "vec": [
+                            {
+                              "symbol": "BusinessCount"
+                            },
+                            {
                               "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
                             }
                           ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "vec": [
+                            {
+                              "symbol": "RoleHolders"
+                            }
+                          ]
+                        },
+                        "val": {
+                          "vec": [
+                            {
+                              "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "vec": [
+                            {
+                              "symbol": "Roles"
+                            },
+                            {
+                              "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                            }
+                          ]
+                        },
+                        "val": {
+                          "u32": 1
                         }
                       }
                     ]
