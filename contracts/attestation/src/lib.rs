@@ -57,6 +57,8 @@ mod multisig_test;
 #[cfg(test)]
 mod revocation_test;
 #[cfg(test)]
+mod pause_test;
+#[cfg(test)]
 mod test;
 // ─── End test modules ───
 
@@ -685,6 +687,7 @@ impl AttestationContract {
         new_version: u32,
     ) {
         access_control::require_admin(&env, &caller);
+        access_control::require_not_paused(&env);
 
         let key = DataKey::Attestation(business.clone(), period.clone());
         let (old_merkle_root, timestamp, old_version, fee_paid, expiry_timestamp): (
