@@ -66,6 +66,13 @@ pub enum DataKey {
     VolumeDiscounts,
     /// Protocol DAO contract address controlling fee configuration.
     Dao,
+
+    // ── Rate limiting ──────────────────────────────────────────
+    /// Global rate limit configuration (`RateLimitConfig`).
+    RateLimitConfig,
+    /// Per-business submission timestamps within the current window.
+    /// Stores a `Vec<u64>` of ledger timestamps.
+    SubmissionTimestamps(Address),
 }
 
 /// On-chain fee configuration.
